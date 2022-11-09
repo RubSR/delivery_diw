@@ -1,8 +1,11 @@
+import 'package:delivery_diw/models/api_reponse.dart';
+import 'package:delivery_diw/pages/registro/provider/registro_provider.dart';
 import 'package:delivery_diw/widgets/back_button.dart';
 import 'package:delivery_diw/widgets/button_widget.dart';
 import 'package:delivery_diw/widgets/input_widget.dart';
 import 'package:delivery_diw/widgets/stack_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RegistroPage extends StatefulWidget {
   const RegistroPage({Key? key}) : super(key: key);
@@ -54,5 +57,38 @@ class _RegistroPageState extends State<RegistroPage> {
     );
   }
 
-  void _registrarUsuario() {}
+   _registrarUsuario() async {
+
+    setState(() {
+      disabled = true;
+    });
+
+    Map<String,dynamic> cliente = {
+      'user':{
+        'email': emailCtrl.text,
+        'password': passwordCtrl.text,
+      },
+      'role': 'ROLE_CLIENTE',
+      'cliente': {
+        'nombre': nombreCtrl.text,
+        'apellidos':apellidosCtrl.text,
+        'telefono': telefonoCtrl.text,
+      }
+    };
+
+    //LLamar a la api y enviarle el cliente
+     RegistroService registroService = RegistroService();
+     ApiResponse apiResponse = await registroService.registroUser(cliente);
+     if(!apiResponse.error){
+       Navigator.pop(context);
+     }else{
+       //Mostrar un mensaje diciendo que ha ocurrido un error.
+       Fluttertoast.showToast(msg: apiResponse.apiErrorMessage);
+     }
+     setState(() {
+       //Activamos de nuevo el boton
+       disabled = false;
+     });
+
+   }
 }
