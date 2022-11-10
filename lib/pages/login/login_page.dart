@@ -101,8 +101,19 @@ class _LoginPageState extends State<LoginPage> {
 
     LoginService loginService = LoginService();
     ApiResponse apiResponse = await loginService.loginUser(user);
-    if(apiResponse.error){
-      Fluttertoast.showToast(msg: apiResponse.apiErrorMessage);
+    // Segun lo que venga de la api hacemos una cosa u otra
+    if(!apiResponse.error){
+
+      //TODO:Ir a la pagina de comenzar pedido
+      //Navigator.pusNamed-> añadir a la pila de navegacion la pagina
+      // que podiamos navegar hacia a atrás
+      //Como vamos a navegar desde el login . Me interesa que el usuario pueda
+      //volver a atras?
+      //Navega y borra todo el historial de navagacion
+      Navigator.pushReplacementNamed(context, '/pedido');
+
+    }else{
+      Fluttertoast.showToast(msg: 'Credenciales incorrectos');
     }
     setState(() {
       disabled = false;
