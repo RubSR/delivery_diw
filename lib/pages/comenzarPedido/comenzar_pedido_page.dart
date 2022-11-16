@@ -24,6 +24,9 @@ class _PedidoPageState extends State<PedidoPage> {
   //2. Traerno el servicio
   PedidoService pedidoService = PedidoService();
   //3.Llamar a la api endpoint de Get /cliente/{id} en el initState
+
+  Direcciones? direccionSeleccionada;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -76,10 +79,26 @@ class _PedidoPageState extends State<PedidoPage> {
                             expand: true,
                             context: context,
                             builder: (context)=>
+                            //Le pasamos nuestras direcciones ...
+                            //Y cuando se cierre necesitamos una manera de capturar la direccion que se ha seleccionado
                                 SelecDireccionPage(direcciones: snapshot.data!.direcciones!)
-                        //TODO: Pasarle la pagina que queremos que pinte en modo modal
 
-                        );
+                        //Se espera a que termine o se cierre el widget
+                          //y recibe por parametro lo que devuelve el widget
+                        ).then((value) {
+                          //Comprobar que no sea null ya que cuandop se cierra el modal de forma
+                          //manual no se selecciona direccion por lo tanto value = null
+                          if(value != null){
+                            //Me guardo el value en una variable ojo de tipo Direccion
+                            //y actulizo el estado del widget
+                            setState(() {
+                              direccionSeleccionada = value;
+                            });
+
+                          }
+
+                        });
+
                       },
                       child: const Text('Seleccionar direccion',
                       style: TextStyle(
@@ -88,7 +107,8 @@ class _PedidoPageState extends State<PedidoPage> {
                         fontSize: 12
                       ),
                       ),
-                    )
+                    ),
+                    _direccionSeleccionada(),
                   ],
                 );
               }
@@ -102,4 +122,29 @@ class _PedidoPageState extends State<PedidoPage> {
 
     );
   }
+
+ Widget _direccionSeleccionada() {
+    if(direccionSeleccionada == null){
+      return SizedBox();
+    }
+    return Container(
+      margin:  EdgeInsets.only(top: 10),
+      child: Card(
+        color:  Color.fromRGBO(208, 207, 207, 1.0),
+        child: ListTile(
+          title: Text('${direccionSeleccionada!.calle!}, ${direccionSeleccionada!.numero!}, ${direccionSeleccionada!.puertaPisoEscalera!}'),
+          subtitle: Text('${direccionSeleccionada!.provincia!.provincia!}, ${direccionSeleccionada!.municipio!.municipio!}, ${direccionSeleccionada!.codPostal!} '),
+          trailing: IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: (){
+              setState(() {
+                direccionSeleccionada = null;
+              });
+            },
+          ),
+        ),
+      ),
+    );
+
+ }
 }

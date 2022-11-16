@@ -25,9 +25,32 @@ class PedidoService{
         );
     if(res.statusCode == 200){
       //1 Pasa de json a map y de map a Cliente
+      //Solo recibo un cliente
       return Cliente.fromJson(json.decode(res.body));
     }else{
       throw Exception('Error al traer el cliente');
     }
+  }
+
+  //Metodo que le pide a la api el listado de provincias
+  Future<List<Provincia>> getProvincias() async{
+    List<Provincia> provincias = [];
+
+    String token = await UserPreferences().userAccesToken;
+    Response res = await get(Uri.parse('${baseUrl}provincias'),
+      headers: {
+      'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      }
+    );
+    if(res.statusCode == 200){
+      //lista de pronvicias -> [{}]
+      //Primero pasamos a map ->lista maps -> maps a objetos
+      List<dynamic> lista = json.decode(res.body); // List<Map>
+      //Recorrer esa lista y pasar cada objeto que hay dentro (mapas)
+      // y pasar uno por uno ese map a Objeto
+      provincias = lista.map((e) => Provincia.fromJson(e)).toList();
+    }
+    throw Exception('Error al traer las provincias');
   }
 }

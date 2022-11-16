@@ -1,5 +1,7 @@
+import 'package:delivery_diw/pages/comenzarPedido/modals/add_direccion_modal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../../models/Cliente.dart';
 
@@ -12,8 +14,7 @@ class SelecDireccionPage extends StatefulWidget {
   State<SelecDireccionPage> createState() => _SelecDireccionPageState();
 }
 
-class Direccion {
-}
+
 
 class _SelecDireccionPageState extends State<SelecDireccionPage> {
   @override
@@ -27,20 +28,56 @@ class _SelecDireccionPageState extends State<SelecDireccionPage> {
             child: const Text('Añadir direccion',
             style: TextStyle(color: Colors.green, fontSize: 10),
             ),
-            onPressed: (){},
+            onPressed: (){
+              showMaterialModalBottomSheet(
+                expand: true,
+                  context: context,
+                  builder: (context) => AddDireccionModal()
+
+
+              );
+
+            },
           ),
         ),
         child:SafeArea (
+              //Comprobar si mi lista de direcciones esta vacia o no
+          // con un ternario
+            child:
+            widget.direcciones.isEmpty?
+            Container(
 
-            child: Container(
-
-                margin: EdgeInsets.symmetric(vertical: 50),
+                margin: const EdgeInsets.symmetric(vertical: 50),
                 alignment: Alignment.center,
                 child: Column(
-                  children: [
-                    const Text('No hay direcciones disponibles'),
+                  children:const [
+                     Text('No hay direcciones disponibles'),
                   ],
-                ))),
+                ))
+                :
+            ListView.builder(
+              //La longitud de la lista
+                itemCount: widget.direcciones.length ,
+                itemBuilder: (context, int i){
+                  return ListTile(
+                    onTap: (){
+                      Navigator.pop(context,widget.direcciones[i]);
+                    },
+                     //calle , numer, puerta piso escalera
+                    title: Text('${widget.direcciones[i].calle!}, ${widget.direcciones[i].numero!}, ${widget
+                    .direcciones[i].puertaPisoEscalera!}'),
+                    subtitle: Text('${widget.direcciones[i].provincia!.provincia!}, ${widget
+                        .direcciones[i].municipio!.municipio!}, ${widget.direcciones[i].codPostal!} '),
+                    // trailing: IconButton(
+                    //   icon: const Icon(Icons.add, color: Colors.green),
+                    //   onPressed: (){
+                    //       Navigator.pop(context,widget.direcciones[i]);
+                    //   },
+                    // ),
+                  );
+                }
+            )
+        ),
         //Pintar las lista de direcciones
       ),
     );
