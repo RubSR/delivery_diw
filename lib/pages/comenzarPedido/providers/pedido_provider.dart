@@ -50,7 +50,30 @@ class PedidoService{
       //Recorrer esa lista y pasar cada objeto que hay dentro (mapas)
       // y pasar uno por uno ese map a Objeto
       provincias = lista.map((e) => Provincia.fromJson(e)).toList();
+      return provincias;
     }
     throw Exception('Error al traer las provincias');
+  }
+  
+  Future<List<Municipio>> getMunicipios(int id) async{
+    List<Municipio> municipios = [];
+    String token = await userPreferences.userAccesToken;
+    
+    Response res = await get(Uri.parse('${baseUrl}provincias/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        }
+        );
+    if(res.statusCode == 200){
+      //1. pasamos de array de json a List de map
+      List<dynamic> jsonList = json.decode(res.body);
+      //2.Recorremos la lista de map y pasamos cada map a objeto
+      municipios = jsonList.map((e) => Municipio.fromJson(e)).toList();
+      return municipios;
+
+    }
+    throw Exception('Error al traer los municipios');
+    
   }
 }
